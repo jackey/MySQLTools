@@ -6,20 +6,26 @@ import threading
 import random
 import time
 import sys, getopt
+import ConfigParser
+
+PWD = os.path.dirname(os.path.abspath(__file__))
 
 """
 Run it: python db.py --mylog=/path/to/mysql/log
 """
-config = {
-	"path_to_mysql_log": "",
-}
 
-"""Print Usage Message"""
+def load_config():
+	path = os.path.join(PWD, "config.ini")
+	if os.path.lexists(path):
+		parser = ConfigParser.RawConfigParser()
+		parser.read(path)
+		return parser
+	else:
+		return False
+
 def print_usage():
-	print """usage: python db.py --mylog=/path/to/mysql/log"""
-
-def read_mylog():
-	pass
+	"""Print Usage Message"""
+	print """usage: python db.py --config=/path/to/config.ini"""
 
 def mysql_query_is_select(query):
 	query = query.replace('\n', "")
@@ -36,9 +42,7 @@ def mysql_query_get_query_parts(query):
 	tmp_parts = query.split('\t')
 	# Hardcode here
 	parts = []
-	for part in tmp_parts:
-		if part != "":
-			parts.append(part)
+	[parts.append(part) for part in tmp_parts if part != ""]
 
 	return parts
 
@@ -51,34 +55,41 @@ def mysql_query_is_delete():
 def mysql_query_is_insert():
 	pass
 
-def run():
+def callback_run_mysql_select(queries, time=3):
+	"""Run mysql query in select type with times in param specialize"""
+	for i in range(0, time):
+		pass
 
+def run():
+	path_to_mysql_log = config.get("mysql", "log")
 	# Step 1, Analysic query log 
-	if not os.path.lexists(config["path_to_mysql_log"]):
+	if not os.path.lexists(path_to_mysql_log):
 		sys.stderr.write("The mysql log path is not exist\r\n");
 		sys.exit(1)
 	select_logs = []
-	with open(config["path_to_mysql_log"]) as f:
+	with open(path_to_mysql_log) as f:
 		# ignore 3 lines
 		comment = f.readline()
 		port_info = f.readline()
 		f.readline()
-		for line in f:
-			if mysql_query_is_select(line):
-				select_logs.append(mysql_query_get_query_parts(line))
+		[select_logs.append(mysql_query_get_query_parts(line)) for line in f if mysql_query_is_select(line)]
 
 	# Step 3, Initialize thread pool
 
+	print select_logs
 
-	
-
+config = load_config()
 
 if __name__ == "__main__":
 	try:
-		args, unknownArgs = getopt.getopt(sys.argv[1:], "", ["mylog="])
+		args, unknownArgs = getopt.getopt(sys.argv[1:], "c:", ["config="])
+		if len(args)  == 0:
+			print_usage()
+			sys.exit(1)
 	except getopt.GetoptError as err:
 		sys.stderr.write("Exception because wrong options\r\n")
 		print_usage()
+		sys.exit(1)
 
 	for n, v in args:
 		if (n == "--mylog"):
