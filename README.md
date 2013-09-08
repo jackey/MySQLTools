@@ -9,4 +9,4 @@ Dependencies
 
 * Python 2.7
 
-* python-mysqldb [href="http://mysql-python.sourceforge.net/MySQLdb.html#installation"]
+* mysqldb ("http://mysql-python.sourceforge.net/MySQLdb.html#installation")
