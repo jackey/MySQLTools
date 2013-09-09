@@ -29,14 +29,10 @@ class ClientConsumeThread(threading.Thread):
 			sql = query[1]
 			try:
 				self.db.query(sql)
-				result = self.db.use_result()
-				while result.fetch_row():
-					pass
-			except:
-				print "Error: [%s]" %(sql)
-
-
-
+				result = self.db.store_result()
+				print "Run: %s" %(sql)
+			except Exception as e:
+				print "Error: %s" %(sql)
 
 def load_config():
 	path = os.path.join(PWD, "config.ini")
@@ -101,8 +97,11 @@ def run():
 	# Step 3, Initialize thread pool
 
 	threads_queue = []
-	for i in range(1, 10):
-		threads_queue.append(ClientConsumeThread(select_logs))
+	thread_pool_size = config.get("threadpool", "poolsize")
+	for i in range(1, int(thread_pool_size)):
+		thread = ClientConsumeThread(select_logs)
+		print "Thread: %s created" %(thread.getName())
+		threads_queue.append(thread)
 
 	for client in threads_queue:
 		client.start()

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+function print_usage() {
+	printf "usage: run [%s|%s|%s]\r\n" "select" "insert" "update" 
+}
+
+PROJECT_PATH="$( dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )") "
+
+if [[ $1 = "select" ]]; then
+	python $PROJECT_PATH/src/db.py
+else:
+	print_usage 
+fi
