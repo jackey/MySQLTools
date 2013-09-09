@@ -7,32 +7,15 @@ import random
 import time
 import sys, getopt
 import ConfigParser
+import clientconsumethread
 
 PWD = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-"""
-Run it: python db.py --mylog=/path/to/mysql/log
-"""
+sys.path.append(os.path.join(PWD, "src"))
 
-class ClientConsumeThread(threading.Thread):
-	def __init__(self, queries):
-		threading.Thread.__init__(self)
-		self.queries = queries
-		self.config = load_config()
-		self.db = _mysql.connect(self.config.get("mysql", "host"), \
-				self.config.get('mysql', 'user'), \
-				self.config.get('mysql', 'pass'), \
-				self.config.get('mysql', 'database'))
-
-	def run(self):
-		for query in self.queries:
-			sql = query[1]
-			try:
-				self.db.query(sql)
-				result = self.db.store_result()
-				print "Run: %s" %(sql)
-			except Exception as e:
-				print "Error: %s" %(sql)
+"""
+Run it: python db.py 
+"""
 
 def load_config():
 	path = os.path.join(PWD, "config.ini")
@@ -99,7 +82,7 @@ def run():
 	threads_queue = []
 	thread_pool_size = config.get("threadpool", "poolsize")
 	for i in range(1, int(thread_pool_size)):
-		thread = ClientConsumeThread(select_logs)
+		thread = clientconsumethread.ClientConsumeThread(select_logs)
 		print "Thread: %s created" %(thread.getName())
 		threads_queue.append(thread)
 

@@ -7,7 +7,7 @@ function print_usage() {
 PROJECT_PATH="$( dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )") "
 
 if [[ $1 = "select" ]]; then
-	python $PROJECT_PATH/src/db.py
+	cd $PROJECT_PATH && python src/db.py
 else:
 	print_usage 
 fi
