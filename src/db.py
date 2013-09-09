@@ -8,11 +8,35 @@ import time
 import sys, getopt
 import ConfigParser
 
-PWD = os.path.dirname(os.path.abspath(__file__))
+PWD = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 """
 Run it: python db.py --mylog=/path/to/mysql/log
 """
+
+class ClientConsumeThread(threading.Thread):
+	def __init__(self, queries):
+		threading.Thread.__init__(self)
+		self.queries = queries
+		self.config = load_config()
+		self.db = _mysql.connect(self.config.get("mysql", "host"), \
+				self.config.get('mysql', 'user'), \
+				self.config.get('mysql', 'pass'), \
+				self.config.get('mysql', 'database'))
+
+	def run(self):
+		for query in self.queries:
+			sql = query[1]
+			try:
+				self.db.query(sql)
+				result = self.db.use_result()
+				while result.fetch_row():
+					pass
+			except:
+				print "Error: [%s]" %(sql)
+
+
+
 
 def load_config():
 	path = os.path.join(PWD, "config.ini")
@@ -76,23 +100,20 @@ def run():
 
 	# Step 3, Initialize thread pool
 
-	print select_logs
+	threads_queue = []
+	for i in range(1, 10):
+		threads_queue.append(ClientConsumeThread(select_logs))
+
+	for client in threads_queue:
+		client.start()
+
+	for client in threads_queue:
+		client.join()
+
+	print "Finished"
+
 
 config = load_config()
 
 if __name__ == "__main__":
-	try:
-		args, unknownArgs = getopt.getopt(sys.argv[1:], "c:", ["config="])
-		if len(args)  == 0:
-			print_usage()
-			sys.exit(1)
-	except getopt.GetoptError as err:
-		sys.stderr.write("Exception because wrong options\r\n")
-		print_usage()
-		sys.exit(1)
-
-	for n, v in args:
-		if (n == "--mylog"):
-			config["path_to_mysql_log"] = v;
-
 	run()
