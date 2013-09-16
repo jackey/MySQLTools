@@ -1,4 +1,4 @@
-#encoding=utf8
+#coding=utf8
 
 import os, sys
 import db
@@ -25,7 +25,7 @@ if __name__ == "__main__":
 		row = cursor.fetchone()
 		if not row:
 			break
-		print "%s : %s" %(row[0], row[1])
+		print row
 
 	cursor.close()
 	db.close()
