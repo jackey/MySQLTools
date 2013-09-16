@@ -10,10 +10,12 @@ import ConfigParser
 import db
 
 class ClientConsumeThread(threading.Thread):
-	def __init__(self, queries):
+	def __init__(self, queries, config = None):
 		threading.Thread.__init__(self)
 		self.queries = queries
-		self.config = db.load_config()
+		self.config = config
+		if self.config is None:
+			self.config = db.load_config()
 		self.db = _mysql.connect(self.config.get("mysql", "host"), \
 				self.config.get('mysql', 'user'), \
 				self.config.get('mysql', 'pass'), \

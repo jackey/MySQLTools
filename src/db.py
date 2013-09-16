@@ -9,16 +9,15 @@ import sys, getopt
 import ConfigParser
 import clientconsumethread
 
-PWD = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-sys.path.append(os.path.join(PWD, "src"))
+APP_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(APP_PATH, "src"))
 
 """
 Run it: python db.py 
 """
 
 def load_config():
-	path = os.path.join(PWD, "config.ini")
+	path = os.path.join(APP_PATH, "config.ini")
 	if os.path.lexists(path):
 		parser = ConfigParser.RawConfigParser()
 		parser.read(path)
