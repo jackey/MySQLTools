@@ -1,3 +1,5 @@
 config.ini
 
+src/*.pyc
+
 *.egg
