@@ -1,7 +1,12 @@
-MysqllogReplay
+MySQLTools
 ==============
 
-Replay MySQL Log For Monitor Performance.
+Include tools for help mysql performance test.
+
+Tools Include
+==============
+* Query Log Replay (./bin/run)
+* Batch Insert (.bin/io_test)
 
 
 Dependencies
