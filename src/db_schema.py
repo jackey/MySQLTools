@@ -26,8 +26,8 @@ def field_value(field_type):
 	ischar, charlen = is_char(field_type)
 
 	if isint is not None:
-		print random_int(1<<int(intlen)*4)
+		return random_int(1<<int(intlen)*4)
 	elif ischar is not None:
-		pass
+		return random_str(int(charlen))
 
 

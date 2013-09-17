@@ -4,22 +4,28 @@ import os, sys
 import db
 import MySQLdb
 import db_schema
+import clientconsumethread
 
 APP_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(APP_PATH, "src"))
 
 def general_insert_queries(table, fields, count = 1000):
-	values = []
-	for field in fields:
-		field_type = field[1]
-		values.append(db_schema.field_value(field_type))
-	pass
-
-table = "node"
-database = "test_io"
+	queries = []
+	for i in range(0, count):
+		values = []
+		columns = []
+		for field_name, field_type in fields:
+			values.append("'"+ str(db_schema.field_value(field_type)) + "'")
+			columns.append(field_name)
+		queries.append(("", "INSERT INTO %s ( %s ) VALUES (%s)" %(table, ",".join(columns), ",".join(values))))
+	return queries
 
 if __name__ == "__main__":
 	config = db.load_config()
+	table = config.get("io_test_mysql", "table")
+	database = config.get("io_test_mysql", "database");
+	consume_count = config.get('io_test_mysql', 'consume')
+
 	try:
 		db = MySQLdb.connect(host="localhost", user="root", passwd="admin", db=database)
 	except MySQLdb.Error as e:
@@ -31,13 +37,25 @@ if __name__ == "__main__":
 	cursor.execute("""desc %s""" %(table))
 
 	fields = []
-	while 1:
+	while True:
 		field = cursor.fetchone()
 		if not field:
 			break
-		fields.append((field[0], field[1]))
-
-	queries = general_insert_queries(table, fields)
-	print queries
+		[name for name in field if name == "PRI"]
+		if name is "":
+			fields.append((field[0], field[1]))
 	cursor.close()
 	db.close()
+
+	queries = general_insert_queries(table, fields, int(config.get("io_test_mysql", "count")))
+	threads = []
+	for i in range(int(consume_count)):
+		 thread = clientconsumethread.ClientConsumeThread(queries, config, "io_test_mysql")
+		 thread.start()
+		 print "Start Consume with name: %s." %(thread.getName())
+		 threads.append(thread)
+
+	for thread in threads:
+		thread.join()
+
+	print "Finish"

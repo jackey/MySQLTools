@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+function print_usage() {
+	printf "usage: io_test "
+}
+
+PROJECT_PATH="$( dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )") "
+
+if [[ $1 = "select" ]]; then
+	cd $PROJECT_PATH && python src/io_test
+else:
+	print_usage 
+fi
