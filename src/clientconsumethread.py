@@ -14,6 +14,7 @@ class ClientConsumeThread(threading.Thread):
 		threading.Thread.__init__(self)
 		self.queries = queries
 		self.config = config
+		self.config_section = config_section
 		if self.config is None:
 			self.config = db.load_config()
 		self.db = _mysql.connect(self.config.get(config_section, "host"), \
@@ -27,6 +28,8 @@ class ClientConsumeThread(threading.Thread):
 			try:
 				self.db.query(sql)
 				result = self.db.store_result()
-				print "Run: %s" %(sql)
+				if self.config.get(self.config_section, "print_to_console") == 0:
+					print "Run: %s" %(sql)
 			except Exception as e:
-				print "Error: %s" %(sql)
+				if self.config.get(self.config_section, "print_to_console") == 0:
+					print "Error: %s" %(sql)

@@ -5,6 +5,7 @@ import db
 import MySQLdb
 import db_schema
 import clientconsumethread
+import datetime
 
 APP_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(APP_PATH, "src"))
@@ -51,11 +52,15 @@ if __name__ == "__main__":
 	threads = []
 	for i in range(int(consume_count)):
 		 thread = clientconsumethread.ClientConsumeThread(queries, config, "io_test_mysql")
-		 thread.start()
-		 print "Start Consume with name: %s." %(thread.getName())
 		 threads.append(thread)
+
+	print "Start Running at: %s " %(datetime.datetime.now())
+	for thread in threads:
+		thread.start()
+		print "Start Consume with name: %s." %(thread.getName())
 
 	for thread in threads:
 		thread.join()
 
-	print "Finish"
+
+	print "Finished at: %s " %(datetime.datetime.now())
