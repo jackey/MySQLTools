@@ -23,8 +23,6 @@ class ClientConsumeThread(threading.Thread):
 				self.config.get(config_section, 'database'))
 
 	def run(self):
-		# Disable auto commit feature.
-		self.db.query("SET AUTOCOMMIT=0");
 		for query in self.queries:
 			sql = query[1]
 			try:
@@ -35,5 +33,3 @@ class ClientConsumeThread(threading.Thread):
 			except Exception as e:
 				if self.config.get(self.config_section, "print_to_console") == 0:
 					print "Error: %s" %(sql)
-
-		self.db.query("COMMIT");
