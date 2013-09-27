@@ -33,3 +33,4 @@ class ClientConsumeThread(threading.Thread):
 			except Exception as e:
 				if self.config.get(self.config_section, "print_to_console") == 0:
 					print "Error: %s" %(sql)
+		self.db.close()

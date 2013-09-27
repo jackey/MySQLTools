@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+function print_usage() {
+	printf "usage: io_test "
+}
+
+PROJECT_PATH="$( dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )") "
+
+cd $PROJECT_PATH && python src/loop.py
