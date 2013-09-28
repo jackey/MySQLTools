@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Show me machine that around in current local area network
+
+NET=$( ifconfig | grep 'inet addr' | cut -d: -f2 | awk '{print $1}' | grep -v "127.0.0.1" | cut -d. -f1,2,3 )
+for ip in $(seq 1 254);
+do ping -c 1 $NET.$ip >/dev/null;
+	if [ $? -eq 0 ];then
+		echo "$NET.$ip" up
+	fi
+done
